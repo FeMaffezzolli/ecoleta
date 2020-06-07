@@ -50,11 +50,7 @@ class PointsController {
       items,
     } = req.body
 
-    const trx = await knex.transaction()
-
-    const [pointId] = await trx('points').insert({
-      image:
-        'https://images.unsplash.com/photo-1558267748-a210b34249c9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+    const point = {
       name,
       email,
       whatsapp,
@@ -62,7 +58,13 @@ class PointsController {
       longitude,
       city,
       uf,
-    })
+      image:
+        'https://images.unsplash.com/photo-1558267748-a210b34249c9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+    }
+
+    const trx = await knex.transaction()
+
+    const [pointId] = await trx('points').insert(point)
 
     const pointItems = items.map((item: number) => ({
       point_id: pointId,
@@ -73,7 +75,7 @@ class PointsController {
 
     await trx.commit()
 
-    return res.json({ success: true })
+    return res.json({ ...point, id: pointId })
   }
 }
 
