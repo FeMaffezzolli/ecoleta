@@ -8,6 +8,8 @@ import api from '../../services/api'
 
 import { FiArrowLeft } from 'react-icons/fi'
 
+import Dropzone from '../../components/Dropzone'
+
 import logo from '../../assets/logo.svg'
 
 import './styles.css'
@@ -32,7 +34,7 @@ const CreatePoint = () => {
 
   // States
   const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0])
-
+  const [selectedFile, setSelectedFile] = useState<File>()
   const [items, setItems] = useState<Item[]>([])
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
@@ -77,6 +79,7 @@ const CreatePoint = () => {
     })
   }, [])
 
+  // functions
   function handleSelectUf(event: ChangeEvent<HTMLSelectElement>) {
     setSelectedUf(event.target.value)
   }
@@ -112,16 +115,17 @@ const CreatePoint = () => {
     const {name, email, whatsapp} = formData
     const [latitude, longitude] = selectedPosition
 
-    const data = {
-      name,
-      email,
-      whatsapp,
-      items: selectedItems,
-      uf: selectedUf,
-      city: selectedCity,
-      latitude,
-      longitude,
-    }
+    const data = new FormData()
+
+    data.append('name', name)
+    data.append('email', email)
+    data.append('whatsapp', whatsapp)
+    data.append('items', selectedItems.join(','))
+    data.append('uf', selectedUf)
+    data.append('city', selectedCity)
+    data.append('latitude', String(latitude))
+    data.append('longitude', String(longitude))
+    selectedFile && data.append('image', selectedFile)
 
     api.post('/points', data).then(
       () => {
@@ -133,6 +137,7 @@ const CreatePoint = () => {
     )
   }
 
+  // renders
   return (
     <div id="page-create-point">
       <header>
@@ -146,6 +151,8 @@ const CreatePoint = () => {
 
       <form onSubmit={handleSubmit}>
         <h1>Cadastro do <br /> ponto de coleta</h1>
+
+        <Dropzone onFileUploaded={setSelectedFile} />
 
         <fieldset>
           <legend>
