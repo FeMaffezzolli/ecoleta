@@ -1,16 +1,21 @@
 import express from 'express'
+import multer from 'multer'
+
+import multerConfig from './config/multer'
 
 // constroller
 import ItemsController from './controllers/ItemsController'
 import PointsController from './controllers/PointsController'
 
 const routes = express.Router()
+const upload = multer(multerConfig)
 
 const itemsController = new ItemsController()
 const pointsController = new PointsController()
 
+routes.post('/points', upload.single('image'), pointsController.store)
+
 routes.get('/items', itemsController.index)
-routes.post('/points', pointsController.store)
 routes.get('/points', pointsController.index)
 routes.get('/points/:id', pointsController.show)
 
