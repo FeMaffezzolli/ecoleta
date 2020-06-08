@@ -15,6 +15,7 @@ class PointsController {
       .where('city', String(city))
       .where('uf', String(uf))
       .distinct()
+      .select('points.*')
 
     return res.json(points)
   }
